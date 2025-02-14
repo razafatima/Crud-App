@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./todolist.module.css";
 
 export default function TodoList() {
@@ -6,6 +6,19 @@ export default function TodoList() {
   const [description, setDescription] = useState("");
   const [tasks, setTasks] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
+
+
+  useEffect(() =>{
+    const savedTasks = JSON.parse(localStorage.getItem('tasks'));
+    if(savedTasks){
+      setTasks(savedTasks);
+    }
+  }, []);
+
+  const updatedLocalStorage = (updatedTasks) => {
+    setTasks(updatedTasks);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+  };
 
   const addTask = () => {
     if (task.trim() !== "" && description.trim() !== "") {
@@ -15,7 +28,7 @@ export default function TodoList() {
         setTasks(updatedTasks);
         setEditIndex(null);
       } else {
-        setTasks([...tasks, { task, description }]);
+        updatedLocalStorage([...tasks, { task, description }]);
       }
       setTask("");
       setDescription("");
@@ -30,8 +43,10 @@ export default function TodoList() {
 
   const deleteTask = (index) => {
     const updatedTasks = tasks.filter((_, i) => i !== index);
-    setTasks(updatedTasks);
+    updatedLocalStorage(updatedTasks);
   };
+
+
 
   return (
     <div className="container">
